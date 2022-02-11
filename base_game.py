@@ -89,14 +89,14 @@ class TicTacToe():
 
     def play(self):
         while not self.check_victory():
-            print(self.check_victory())
             current_player = self.players[self.turn_count % 2]
             if current_player == "Player":
                 self.get_player_turn()
             else:
                 self.get_AI_turn()
             self.turn_count += 1
-            print(self.grid)
+            for row in self.grid:
+                print(row)
         winning_symbol = self.check_victory()
         print(f"Congratulations {self.symbol_dict[winning_symbol]}! You win!")
 
