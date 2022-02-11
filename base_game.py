@@ -4,7 +4,7 @@ class TicTacToe():
     def __init__(self):
         self.size = 3
         self.players = ["Player", "Computer"]
-        self.grid = [[None for y in range(self.size)]for x in range(self.size)]
+        self.grid = [["_" for y in range(self.size)]for x in range(self.size)]
         self.turn_count = 0
         self.player_symbol = input("Please enter your symbol: ")
         if self.player_symbol.lower() == "o":
@@ -24,7 +24,7 @@ class TicTacToe():
     def check_valid(self, row, column):
         if row >= self.size or column >= self.size:
             return False
-        if self.grid[row][column] != None:
+        if self.grid[row][column] != "_":
             return False
         return True
 
@@ -32,7 +32,7 @@ class TicTacToe():
         for row in self.grid:
             empty = False
             for cell in row:
-                if not cell:
+                if cell == "_":
                     empty = True
                     break
             if empty:
@@ -45,7 +45,7 @@ class TicTacToe():
         for col in [*zip(*self.grid)]:
             empty = False
             for cell in col:
-                if not cell:
+                if cell == "_":
                     empty = True
                     break
             if empty:
@@ -63,10 +63,10 @@ class TicTacToe():
             left_diag.append(self.grid[row_index][row_index])
             right_diag.append(self.grid[self.size-row_index-1][row_index])
         for left_cell in left_diag:
-            if not left_cell:
+            if left_cell == "_":
                 left_diag_empty = True
         for right_cell in right_diag:
-            if not right_cell:
+            if right_cell == "_":
                 right_diag_empty = True
         if right_diag_empty and left_diag_empty:
             return False
@@ -85,20 +85,30 @@ class TicTacToe():
             return (self.check_diagonal_victory()
                 or self.check_horizontal_victory()
                 or self.check_vertical_victory())
+        # print(f"Check Diagonal {self.check_diagonal_victory()}")
+        # print(f"Check Horizontal {self.check_horizontal_victory()}")
+        # print(f"Check Vertical {self.check_vertical_victory()}")
         return False
 
     def play(self):
-        while not self.check_victory():
+        draw = False
+        while not self.check_victory() and self.moves_left():
             current_player = self.players[self.turn_count % 2]
             if current_player == "Player":
                 self.get_player_turn()
+                print(f"Check Diagonal {self.check_diagonal_victory()}")
+                print(f"Check Horizontal {self.check_horizontal_victory()}")
+                print(f"Check Vertical {self.check_vertical_victory()}")
             else:
                 self.get_AI_turn()
             self.turn_count += 1
             for row in self.grid:
                 print(row)
         winning_symbol = self.check_victory()
-        print(f"Congratulations {self.symbol_dict[winning_symbol]}! You win!")
+        if not winning_symbol:
+            print(f"It's a draw!")
+        else:
+            print(f"Congratulations {self.symbol_dict[winning_symbol]}! You win!")
 
     def get_player_turn(self):
         valid = False
@@ -111,12 +121,15 @@ class TicTacToe():
 
     def get_AI_turn(self):
         move = self.find_best_move(self.grid)
-        self.fill_cell(self.AI_symbol, move[0], move[1])
+        if self.check_valid(move[0], move[1]):
+            self.fill_cell(self.AI_symbol, move[0], move[1])
+        else:
+            pass
 
     def moves_left(self):
         for row in self.grid:
             for cell in row:
-                if cell == None:
+                if cell == "_":
                     return True
         return False
 
@@ -137,26 +150,26 @@ class TicTacToe():
             best_value = -100
             for row_num in range(self.size):
                 for col_num in range(self.size):
-                    if board[row_num][col_num] == None:
+                    if board[row_num][col_num] == "_":
                         board[row_num][col_num] = self.AI_symbol
 
                         best_value = max(best_value, self.minimax(board,
                                                                   depth+1,
                                                                   not is_max))
-                        board[row_num][col_num] = None
+                        board[row_num][col_num] = "_"
             return best_value
         else:
             best_value = 1000
 
             for row_num in range(self.size):
                 for col_num in range(self.size):
-                    if board[row_num][col_num] == None:
+                    if board[row_num][col_num] == "_":
                         board[row_num][col_num] = self.player_symbol
 
                         best_value = min(best_value, self.minimax(board,
                                                                   depth+1,
                                                                   not is_max))
-                        board[row_num][col_num] = None
+                        board[row_num][col_num] = "_"
             return best_value
 
     def find_best_move(self, board):
@@ -165,10 +178,10 @@ class TicTacToe():
 
         for row_num in range(self.size):
             for col_num in range(self.size):
-                if board[row_num][col_num] == None:
+                if board[row_num][col_num] == "_":
                     board[row_num][col_num] = self.AI_symbol
                     move_value = self.minimax(board, 0, False)
-                    board[row_num][col_num] = None
+                    board[row_num][col_num] = "_"
                     if move_value > best_value:
                         best_move = (row_num, col_num)
                         best_value = move_value
