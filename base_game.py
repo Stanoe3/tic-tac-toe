@@ -6,17 +6,14 @@ class TicTacToe():
         self.players = ["Player", "Computer"]
         self.grid = [["_" for y in range(self.size)]for x in range(self.size)]
         self.turn_count = 0
-        self.player_symbol = input("Please enter your symbol: ")
-        if self.player_symbol.lower() == "o":
-            self.AI_symbol = "X"
-        else:
-            self.AI_symbol = "O"
+        self.AI_symbol = "O"
+        self.player_symbol = "X"
         self.symbol_dict = {
             self.AI_symbol: "Computer",
             self.player_symbol: "Player"
         }
 
-        self.play()
+        #self.play()
 
     def fill_cell(self, player_symbol, row, column):
         self.grid[row][column] = player_symbol
@@ -190,5 +187,6 @@ class TicTacToe():
 
 if __name__ == '__main__':
     tic = TicTacToe()
+    tic.play()
 
 
